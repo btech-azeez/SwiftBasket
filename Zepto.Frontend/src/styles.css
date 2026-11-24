@@ -1,0 +1,170 @@
+:root {
+  --zepto-primary: #3b006a;
+  --zepto-primary-light: #52008f;
+  --zepto-accent: #ff3269;
+  --zepto-accent-hover: #e0265a;
+  --zepto-green: #0c831f;
+  --zepto-green-light: #e8f7ec;
+  --zepto-bg: #f5f7fd;
+  --zepto-card-bg: #ffffff;
+  --zepto-text-dark: #1f1f23;
+  --zepto-text-muted: #666e7d;
+  --zepto-border: #e6eaf3;
+  --zepto-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+  --zepto-shadow-lg: 0 10px 30px rgba(59, 0, 106, 0.12);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 9999px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--zepto-bg);
+  color: var(--zepto-text-dark);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  color: var(--zepto-text-dark);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+input, select, textarea {
+  font-family: inherit;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #c7cbd4;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a4abb9;
+}
+
+/* Global Container */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+/* Common Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-green {
+  background: var(--zepto-green-light);
+  color: var(--zepto-green);
+}
+
+.badge-purple {
+  background: #f3e8ff;
+  color: var(--zepto-primary);
+}
+
+.badge-pink {
+  background: #ffe4eb;
+  color: var(--zepto-accent);
+}
+
+/* Common Button Styles */
+.btn-primary {
+  background: var(--zepto-accent);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.btn-primary:hover {
+  background: var(--zepto-accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 50, 105, 0.3);
+}
+
+.btn-secondary {
+  background: #fff;
+  color: var(--zepto-primary);
+  border: 1px solid var(--zepto-border);
+  font-weight: 600;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.btn-secondary:hover {
+  border-color: var(--zepto-primary);
+  background: #faf8ff;
+}
+
+/* Toast/Alert */
+.toast-notice {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: #1e1e24;
+  color: #fff;
+  padding: 0.9rem 1.4rem;
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  z-index: 9999;
+  animation: slideIn 0.3s ease;
+  font-size: 0.9rem;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

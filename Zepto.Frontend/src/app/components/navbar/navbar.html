@@ -1,0 +1,94 @@
+<header class="navbar-wrapper">
+  <div class="container navbar-content">
+    
+    <!-- Logo & Fast Delivery Badge -->
+    <div class="brand-section">
+      <a routerLink="/" class="logo">
+        <span class="logo-zepto">SwiftBasket</span>
+      </a>
+      <div class="delivery-badge">
+        <i class="fa-solid fa-bolt delivery-icon"></i>
+        <div class="delivery-text">
+          <span class="delivery-time">10 Mins Delivery</span>
+          <span class="delivery-loc">Express Hub, Sector 4 &bull; <i class="fa-solid fa-chevron-down loc-arrow"></i></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Search Bar -->
+    <div class="search-section">
+      <form (submit)="onSearch(); $event.preventDefault()" class="search-box">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input 
+          type="text" 
+          [(ngModel)]="searchQuery" 
+          name="query" 
+          placeholder="Search for 'milk', 'apple', 'chips', 'chocolate'..." 
+          (keyup.enter)="onSearch()"
+        />
+        <button type="button" *ngIf="searchQuery" (click)="clearSearch()" class="clear-btn">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </form>
+    </div>
+
+    <!-- Actions / User & Cart -->
+    <div class="actions-section">
+      
+      <!-- User / Profile / Login -->
+      <ng-container *ngIf="authService.isLoggedIn(); else guestTpl">
+        <div class="user-dropdown-container">
+          <button (click)="toggleUserMenu()" class="user-btn">
+            <div class="avatar">{{ authService.currentUser()?.fullName?.charAt(0) || 'U' }}</div>
+            <span class="user-name">{{ authService.currentUser()?.fullName?.split(' ')?.at(0) }}</span>
+            <i class="fa-solid fa-chevron-down user-chevron"></i>
+          </button>
+
+          <div *ngIf="showUserMenu" class="user-dropdown-menu" (mouseleave)="showUserMenu = false">
+            <div class="dropdown-header">
+              <p class="user-full-name">{{ authService.currentUser()?.fullName }}</p>
+              <p class="user-email">{{ authService.currentUser()?.email }}</p>
+              <span class="role-badge" [class.admin-role]="authService.isAdmin()">
+                {{ authService.currentUser()?.role }}
+              </span>
+            </div>
+            
+            <a *ngIf="authService.isAdmin()" routerLink="/admin" (click)="showUserMenu = false" class="dropdown-item">
+              <i class="fa-solid fa-gauge-high"></i> Admin Dashboard
+            </a>
+            <a routerLink="/orders" (click)="showUserMenu = false" class="dropdown-item">
+              <i class="fa-solid fa-bag-shopping"></i> My Orders
+            </a>
+            <button (click)="logout()" class="dropdown-item text-danger">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+            </button>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-template #guestTpl>
+        <a routerLink="/login" class="login-link-btn">
+          <i class="fa-regular fa-user"></i>
+          <span>Login</span>
+        </a>
+      </ng-template>
+
+      <!-- Cart Drawer Trigger Button -->
+      <button (click)="cartService.toggleCart()" class="cart-trigger-btn">
+        <div class="cart-icon-wrap">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span *ngIf="cartService.itemCount() > 0" class="cart-counter">{{ cartService.itemCount() }}</span>
+        </div>
+        <div class="cart-info" *ngIf="cartService.itemCount() > 0">
+          <span class="cart-label">My Cart</span>
+          <span class="cart-total">{{ cartService.total() | currency:'INR':'symbol':'1.2-2':'en-IN' }}</span>
+        </div>
+        <div class="cart-info" *ngIf="cartService.itemCount() === 0">
+          <span class="cart-label">Cart</span>
+        </div>
+      </button>
+
+    </div>
+
+  </div>
+</header>

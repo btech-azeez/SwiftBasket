@@ -1,0 +1,176 @@
+<div class="auth-page container">
+  <div class="auth-card">
+    
+    <!-- SwiftBasket brand header -->
+    <div class="auth-header">
+      <div class="logo">
+        <span class="logo-zepto">SwiftBasket</span>
+      </div>
+      <h2>Groceries in 10 minutes</h2>
+      <p class="subtitle">Log in or sign up to experience supersonic delivery</p>
+    </div>
+
+    <!-- Quick Demo Logins Banner -->
+    <div class="demo-box">
+      <div class="demo-label"><i class="fa-solid fa-key"></i> Quick Demo Logins:</div>
+      <div class="demo-actions">
+        <button type="button" (click)="useDemoCustomer()" class="demo-btn customer">
+          <i class="fa-solid fa-user"></i> Customer Demo
+        </button>
+        <button type="button" (click)="useDemoAdmin()" class="demo-btn admin">
+          <i class="fa-solid fa-shield-halved"></i> Admin Demo
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabs Toggle -->
+    <div class="tab-toggle">
+      <button 
+        type="button" 
+        [class.active]="!isRegister" 
+        (click)="isRegister = false; errorMessage = ''" 
+        class="tab-btn"
+      >
+        Sign In
+      </button>
+      <button 
+        type="button" 
+        [class.active]="isRegister" 
+        (click)="isRegister = true; errorMessage = ''" 
+        class="tab-btn"
+      >
+        Create Account
+      </button>
+    </div>
+
+    <!-- Error message alert -->
+    <div *ngIf="errorMessage" class="error-alert">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <!-- Sign In Form -->
+    <form *ngIf="!isRegister" (submit)="onLogin(); $event.preventDefault()" class="auth-form">
+      <div class="form-group">
+        <label for="loginEmail">Email Address</label>
+        <div class="input-wrap">
+          <i class="fa-solid fa-envelope"></i>
+          <input 
+            type="email" 
+            id="loginEmail" 
+            [(ngModel)]="loginEmail" 
+            name="loginEmail" 
+            placeholder="you@example.com" 
+            required
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="loginPassword">Password</label>
+        <div class="input-wrap">
+          <i class="fa-solid fa-lock"></i>
+          <input 
+            type="password" 
+            id="loginPassword" 
+            [(ngModel)]="loginPassword" 
+            name="loginPassword" 
+            placeholder="••••••••" 
+            required
+          />
+        </div>
+      </div>
+
+      <button type="submit" [disabled]="isLoading" class="btn-primary auth-submit-btn">
+        <span *ngIf="!isLoading">Sign In</span>
+        <span *ngIf="isLoading"><i class="fa-solid fa-spinner fa-spin"></i> Signing in...</span>
+      </button>
+    </form>
+
+    <!-- Register Form -->
+    <form *ngIf="isRegister" (submit)="onRegister(); $event.preventDefault()" class="auth-form">
+      <div class="form-group">
+        <label for="regFullName">Full Name *</label>
+        <div class="input-wrap">
+          <i class="fa-solid fa-user"></i>
+          <input 
+            type="text" 
+            id="regFullName" 
+            [(ngModel)]="regFullName" 
+            name="regFullName" 
+            placeholder="Alex Johnson" 
+            required
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="regEmail">Email Address *</label>
+        <div class="input-wrap">
+          <i class="fa-solid fa-envelope"></i>
+          <input 
+            type="email" 
+            id="regEmail" 
+            [(ngModel)]="regEmail" 
+            name="regEmail" 
+            placeholder="alex@example.com" 
+            required
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="regPassword">Password *</label>
+        <div class="input-wrap">
+          <i class="fa-solid fa-lock"></i>
+          <input 
+            type="password" 
+            id="regPassword" 
+            [(ngModel)]="regPassword" 
+            name="regPassword" 
+            placeholder="At least 6 characters" 
+            required
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="regPhone">Phone Number</label>
+        <div class="input-wrap">
+          <i class="fa-solid fa-phone"></i>
+          <input 
+            type="tel" 
+            id="regPhone" 
+            [(ngModel)]="regPhone" 
+            name="regPhone" 
+            placeholder="+91 98765 43210"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="regAddress">Delivery Address</label>
+        <div class="input-wrap">
+          <i class="fa-solid fa-location-dot"></i>
+          <input 
+            type="text" 
+            id="regAddress" 
+            [(ngModel)]="regAddress" 
+            name="regAddress" 
+            placeholder="House #, Street, City" 
+          />
+        </div>
+      </div>
+
+      <button type="submit" [disabled]="isLoading" class="btn-primary auth-submit-btn">
+        <span *ngIf="!isLoading">Create Account</span>
+        <span *ngIf="isLoading"><i class="fa-solid fa-spinner fa-spin"></i> Creating account...</span>
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>By continuing, you agree to SwiftBasket's Terms of Service & Privacy Policy.</p>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,82 @@
+<main class="orders-page container">
+  <header class="orders-header">
+    <div>
+      <a routerLink="/" class="back-link">
+        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+        Continue shopping
+      </a>
+      <h1>My orders</h1>
+      <p>Track your recent purchases and delivery status.</p>
+    </div>
+    <a routerLink="/" class="shop-link">
+      <i class="fa-solid fa-basket-shopping" aria-hidden="true"></i>
+      Shop groceries
+    </a>
+  </header>
+
+  <div *ngIf="successOrderId" class="success-notice" role="status">
+    <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+    <span>Order #{{ successOrderId }} was placed successfully.</span>
+  </div>
+
+  <section *ngIf="isLoading" class="loading-state" aria-live="polite">
+    <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+    <span>Loading your orders...</span>
+  </section>
+
+  <section *ngIf="!isLoading && orders.length === 0" class="empty-state">
+    <div class="empty-icon">
+      <i class="fa-solid fa-receipt" aria-hidden="true"></i>
+    </div>
+    <h2>No orders yet</h2>
+    <p>Your orders will appear here after checkout.</p>
+    <a routerLink="/" class="shop-link">
+      <i class="fa-solid fa-basket-shopping" aria-hidden="true"></i>
+      Browse groceries
+    </a>
+  </section>
+
+  <section *ngIf="!isLoading && orders.length > 0" class="orders-list" aria-label="Order history">
+    <article *ngFor="let order of orders" class="order-entry">
+      <header class="order-topline">
+        <div>
+          <span class="order-label">Order</span>
+          <h2>#{{ order.id }}</h2>
+        </div>
+        <span class="order-status" [ngClass]="getStatusClass(order.status)">
+          {{ order.status }}
+        </span>
+      </header>
+
+      <div class="order-meta">
+        <span><i class="fa-regular fa-calendar" aria-hidden="true"></i> {{ order.orderDate | date:'mediumDate' }}</span>
+        <span><i class="fa-solid fa-credit-card" aria-hidden="true"></i> {{ order.paymentMethod }}</span>
+        <span><i class="fa-solid fa-location-dot" aria-hidden="true"></i> {{ order.shippingAddress }}</span>
+      </div>
+
+      <div class="order-items">
+        <div *ngFor="let item of order.items" class="order-item">
+          <img
+            *ngIf="item.productImageUrl"
+            [src]="item.productImageUrl"
+            [alt]="item.productName"
+            class="item-image"
+          />
+          <div class="item-details">
+            <strong>{{ item.productName }}</strong>
+            <span>{{ item.quantity }} × {{ item.unitPrice | currency:'INR':'symbol':'1.2-2':'en-IN' }} / {{ item.unit }}</span>
+          </div>
+          <span class="item-total">{{ item.totalPrice | currency:'INR':'symbol':'1.2-2':'en-IN' }}</span>
+        </div>
+      </div>
+
+      <footer class="order-footer">
+        <span>Payment: {{ order.paymentStatus }}</span>
+        <div class="order-totals">
+          <span>Delivery {{ order.deliveryFee | currency:'INR':'symbol':'1.2-2':'en-IN' }}</span>
+          <strong>Total <span>{{ order.totalAmount | currency:'INR':'symbol':'1.2-2':'en-IN' }}</span></strong>
+        </div>
+      </footer>
+    </article>
+  </section>
+</main>

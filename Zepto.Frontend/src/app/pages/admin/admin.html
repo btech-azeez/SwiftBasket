@@ -1,0 +1,115 @@
+<main class="admin-page container">
+  <header class="admin-header">
+    <div>
+      <span class="eyebrow">SWIFTBASKET OPERATIONS</span>
+      <h1>Admin dashboard</h1>
+      <p>Manage your store, catalog, and incoming orders.</p>
+    </div>
+    <button class="icon-button" type="button" title="Refresh data" aria-label="Refresh data" (click)="loadData()">
+      <i class="fa-solid fa-rotate" aria-hidden="true"></i>
+    </button>
+  </header>
+
+  <nav class="admin-tabs" aria-label="Admin sections">
+    <button [class.active]="activeTab === 'overview'" (click)="setTab('overview')"><i class="fa-solid fa-chart-line" aria-hidden="true"></i> Overview</button>
+    <button [class.active]="activeTab === 'products'" (click)="setTab('products')"><i class="fa-solid fa-box" aria-hidden="true"></i> Products</button>
+    <button [class.active]="activeTab === 'categories'" (click)="setTab('categories')"><i class="fa-solid fa-layer-group" aria-hidden="true"></i> Categories</button>
+    <button [class.active]="activeTab === 'orders'" (click)="setTab('orders')"><i class="fa-solid fa-receipt" aria-hidden="true"></i> Orders</button>
+  </nav>
+
+  <div *ngIf="errorMessage" class="notice error-notice" role="alert">{{ errorMessage }}</div>
+  <div *ngIf="notice" class="notice success-notice" role="status">{{ notice }}</div>
+  <div *ngIf="isLoading" class="loading-state" aria-live="polite"><i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> Loading store data...</div>
+
+  <section *ngIf="!isLoading && activeTab === 'overview' && summary" class="overview-panel">
+    <div class="metric-grid">
+      <article class="metric"><span>Revenue</span><strong>{{ summary.totalRevenue | currency:'INR':'symbol':'1.2-2':'en-IN' }}</strong><i class="fa-solid fa-indian-rupee-sign" aria-hidden="true"></i></article>
+      <article class="metric"><span>Orders</span><strong>{{ summary.totalOrders }}</strong><i class="fa-solid fa-bag-shopping" aria-hidden="true"></i></article>
+      <article class="metric"><span>Products</span><strong>{{ summary.totalProducts }}</strong><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i></article>
+      <article class="metric"><span>Customers</span><strong>{{ summary.totalCustomers }}</strong><i class="fa-solid fa-users" aria-hidden="true"></i></article>
+      <article class="metric"><span>Needs attention</span><strong>{{ summary.pendingOrders }}</strong><i class="fa-solid fa-clock" aria-hidden="true"></i></article>
+      <article class="metric"><span>Delivered</span><strong>{{ summary.deliveredOrders }}</strong><i class="fa-solid fa-circle-check" aria-hidden="true"></i></article>
+    </div>
+
+    <div class="section-heading"><div><h2>Recent orders</h2><p>Latest activity across the store</p></div><button class="text-action" (click)="setTab('orders')">View all <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Status</th><th>Total</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let order of summary.recentOrders">
+            <td>#{{ order.id }}</td><td>{{ order.customerName }}</td><td>{{ order.orderDate | date:'mediumDate' }}</td>
+            <td><span class="status-pill">{{ order.status }}</span></td><td>{{ order.totalAmount | currency:'INR':'symbol':'1.2-2':'en-IN' }}</td>
+          </tr>
+          <tr *ngIf="summary.recentOrders.length === 0"><td colspan="5" class="empty-cell">No orders yet.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section *ngIf="!isLoading && activeTab === 'products'" class="management-panel">
+    <div class="section-heading"><div><h2>{{ editingProductId ? 'Edit product' : 'Add product' }}</h2><p>Catalog pricing, stock, and availability</p></div></div>
+    <form class="editor-grid" (ngSubmit)="saveProduct()">
+      <label>Product name<input name="productName" [(ngModel)]="productForm.name" required maxlength="150" /></label>
+      <label>Category<select name="productCategory" [(ngModel)]="productForm.categoryId" required><option [ngValue]="0" disabled>Select category</option><option *ngFor="let category of categories" [ngValue]="category.id">{{ category.name }}</option></select></label>
+      <label>Price<input name="productPrice" type="number" min="0.01" step="0.01" [(ngModel)]="productForm.price" required /></label>
+      <label>Sale price<input name="discountPrice" type="number" min="0.01" step="0.01" [(ngModel)]="productForm.discountPrice" /></label>
+      <label>Stock quantity<input name="stockQuantity" type="number" min="0" max="10000" step="1" [(ngModel)]="productForm.stockQuantity" required /></label>
+      <label>Unit<input name="productUnit" [(ngModel)]="productForm.unit" maxlength="50" required /></label>
+      <label class="wide-field">Image URL<input name="imageUrl" type="url" [(ngModel)]="productForm.imageUrl" maxlength="500" /></label>
+      <label class="wide-field">Description<textarea name="productDescription" [(ngModel)]="productForm.description" maxlength="1000" rows="2"></textarea></label>
+      <label class="check-label"><input name="featured" type="checkbox" [(ngModel)]="productForm.isFeatured" /> Featured product</label>
+      <div class="form-actions"><button class="primary-button" type="submit" [disabled]="isSaving">{{ editingProductId ? 'Save changes' : 'Add product' }}</button><button *ngIf="editingProductId" class="secondary-button" type="button" (click)="cancelProductEdit()">Cancel</button></div>
+    </form>
+
+    <div class="section-heading list-heading"><div><h2>Products <span class="count">{{ products.length }}</span></h2></div></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Availability</th><th></th></tr></thead>
+      <tbody>
+        <tr *ngFor="let product of products">
+          <td><div class="product-name"><img *ngIf="product.imageUrl" [src]="product.imageUrl" [alt]="" /><span>{{ product.name }}<small>{{ product.unit }}</small></span></div></td>
+          <td>{{ product.categoryName }}</td><td>{{ (product.discountPrice || product.price) | currency:'INR':'symbol':'1.2-2':'en-IN' }}</td><td>{{ product.stockQuantity }}</td><td>{{ product.inStock ? 'In stock' : 'Unavailable' }}</td>
+          <td class="row-actions"><button title="Edit product" aria-label="Edit product" (click)="editProduct(product)"><i class="fa-solid fa-pen" aria-hidden="true"></i></button><button title="Delete product" aria-label="Delete product" class="danger-action" (click)="deleteProduct(product)"><i class="fa-solid fa-trash" aria-hidden="true"></i></button></td>
+        </tr>
+        <tr *ngIf="products.length === 0"><td colspan="6" class="empty-cell">No products to show.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section *ngIf="!isLoading && activeTab === 'categories'" class="management-panel">
+    <div class="section-heading"><div><h2>{{ editingCategoryId ? 'Edit category' : 'Add category' }}</h2><p>Group products into storefront departments</p></div></div>
+    <form class="editor-grid category-editor" (ngSubmit)="saveCategory()">
+      <label>Category name<input name="categoryName" [(ngModel)]="categoryForm.name" required maxlength="100" /></label>
+      <label>Icon name<input name="categoryIcon" [(ngModel)]="categoryForm.icon" maxlength="50" placeholder="apple-alt" /></label>
+      <label class="wide-field">Image URL<input name="categoryImage" type="url" [(ngModel)]="categoryForm.imageUrl" maxlength="500" /></label>
+      <label class="wide-field">Description<textarea name="categoryDescription" [(ngModel)]="categoryForm.description" maxlength="500" rows="2"></textarea></label>
+      <div class="form-actions"><button class="primary-button" type="submit" [disabled]="isSaving">{{ editingCategoryId ? 'Save changes' : 'Add category' }}</button><button *ngIf="editingCategoryId" class="secondary-button" type="button" (click)="cancelCategoryEdit()">Cancel</button></div>
+    </form>
+
+    <div class="section-heading list-heading"><div><h2>Categories <span class="count">{{ categories.length }}</span></h2></div></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Category</th><th>Description</th><th>Products</th><th></th></tr></thead>
+      <tbody>
+        <tr *ngFor="let category of categories">
+          <td>{{ category.name }}</td><td>{{ category.description }}</td><td>{{ category.productCount }}</td>
+          <td class="row-actions"><button title="Edit category" aria-label="Edit category" (click)="editCategory(category)"><i class="fa-solid fa-pen" aria-hidden="true"></i></button><button title="Delete category" aria-label="Delete category" class="danger-action" (click)="deleteCategory(category)"><i class="fa-solid fa-trash" aria-hidden="true"></i></button></td>
+        </tr>
+        <tr *ngIf="categories.length === 0"><td colspan="4" class="empty-cell">No categories to show.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section *ngIf="!isLoading && activeTab === 'orders'" class="management-panel">
+    <div class="section-heading"><div><h2>Orders</h2><p>Update fulfillment status for customer orders</p></div><span class="count">{{ orders.length }} total</span></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Order</th><th>Customer</th><th>Placed</th><th>Payment</th><th>Total</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr *ngFor="let order of orders">
+          <td>#{{ order.id }}</td><td>{{ order.customerName }}<small class="cell-subtext">{{ order.customerEmail }}</small></td><td>{{ order.orderDate | date:'medium' }}</td><td>{{ order.paymentMethod }}<small class="cell-subtext">{{ order.paymentStatus }}</small></td><td>{{ order.totalAmount | currency:'INR':'symbol':'1.2-2':'en-IN' }}</td>
+          <td><select class="status-select" [ngModel]="order.status" [name]="'status-' + order.id" (ngModelChange)="updateOrderStatus(order, $event)"><option *ngFor="let status of orderStatuses" [value]="status">{{ status }}</option></select></td>
+        </tr>
+        <tr *ngIf="orders.length === 0"><td colspan="6" class="empty-cell">No orders to manage.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+</main>

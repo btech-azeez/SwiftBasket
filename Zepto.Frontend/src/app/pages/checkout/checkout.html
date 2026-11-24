@@ -1,0 +1,179 @@
+<div class="checkout-page container">
+  
+  <div class="checkout-header">
+    <a routerLink="/" class="back-link">
+      <i class="fa-solid fa-arrow-left"></i> Back to Shopping
+    </a>
+    <h2>Checkout & Express Delivery</h2>
+    <p>Guaranteed dispatch in 2 minutes &bull; Arrival in ~10 minutes</p>
+  </div>
+
+  <div class="checkout-grid">
+    
+    <!-- Left Column: Delivery & Payment Details -->
+    <div class="details-column">
+      
+      <!-- Error notice -->
+      <div *ngIf="errorMessage" class="error-alert">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <!-- Delivery Address Section -->
+      <div class="checkout-card">
+        <div class="card-title-row">
+          <div class="icon-circle">
+            <i class="fa-solid fa-location-dot"></i>
+          </div>
+          <div>
+            <h3>Delivery Address</h3>
+            <span class="subtitle">Where should our delivery partner drop your items?</span>
+          </div>
+        </div>
+
+        <div class="form-fields">
+          <div class="field-group">
+            <label for="addressInput">Full Delivery Address *</label>
+            <textarea 
+              id="addressInput"
+              [(ngModel)]="shippingAddress" 
+              rows="3" 
+              placeholder="House/Flat number, Street name, Landmark, Postal code"
+              required
+            ></textarea>
+          </div>
+
+          <div class="field-group">
+            <label for="phoneInput">Contact Phone Number *</label>
+            <div class="input-with-icon">
+              <i class="fa-solid fa-phone"></i>
+              <input 
+                type="tel" 
+                id="phoneInput"
+                [(ngModel)]="phoneNumber" 
+                placeholder="+91 98765 01928"
+                required
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Method Section -->
+      <div class="checkout-card">
+        <div class="card-title-row">
+          <div class="icon-circle green">
+            <i class="fa-solid fa-wallet"></i>
+          </div>
+          <div>
+            <h3>Payment Method</h3>
+            <span class="subtitle">Select your preferred payment mode</span>
+          </div>
+        </div>
+
+        <div class="payment-options">
+          
+          <label class="payment-option-tile" [class.selected]="paymentMethod === 'UPI'">
+            <input type="radio" name="paymentMethod" value="UPI" [(ngModel)]="paymentMethod" />
+            <div class="option-icon">
+              <i class="fa-solid fa-qrcode"></i>
+            </div>
+            <div class="option-text">
+              <span class="option-title">Instant UPI / QR Code</span>
+              <span class="option-desc">Fast & automated verification</span>
+            </div>
+            <span class="instant-pill">Instant</span>
+          </label>
+
+          <label class="payment-option-tile" [class.selected]="paymentMethod === 'Card'">
+            <input type="radio" name="paymentMethod" value="Card" [(ngModel)]="paymentMethod" />
+            <div class="option-icon">
+              <i class="fa-solid fa-credit-card"></i>
+            </div>
+            <div class="option-text">
+              <span class="option-title">Credit / Debit Card</span>
+              <span class="option-desc">Visa, Mastercard, Amex</span>
+            </div>
+          </label>
+
+          <label class="payment-option-tile" [class.selected]="paymentMethod === 'Cash on Delivery'">
+            <input type="radio" name="paymentMethod" value="Cash on Delivery" [(ngModel)]="paymentMethod" />
+            <div class="option-icon">
+              <i class="fa-solid fa-hand-holding-dollar"></i>
+            </div>
+            <div class="option-text">
+              <span class="option-title">Cash on Delivery</span>
+              <span class="option-desc">Pay cash when package arrives</span>
+            </div>
+          </label>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Order Summary -->
+    <div class="summary-column">
+      <div class="summary-card">
+        <div class="summary-header">
+          <h3>Order Summary</h3>
+          <span class="items-count-badge">{{ cartService.itemCount() }} Items</span>
+        </div>
+
+        <!-- Items list preview -->
+        <div class="summary-items-list">
+          <div *ngFor="let item of cartService.items()" class="summary-item">
+            <img [src]="item.product.imageUrl || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=100'" [alt]="item.product.name" class="summary-thumb" />
+            <div class="summary-info">
+              <span class="summary-name">{{ item.product.name }}</span>
+              <span class="summary-meta">{{ item.quantity }} x {{ (item.product.discountPrice || item.product.price) | currency:'INR':'symbol':'1.2-2':'en-IN' }}</span>
+            </div>
+            <span class="summary-item-total">
+              {{ ((item.product.discountPrice || item.product.price) * item.quantity) | currency:'INR':'symbol':'1.2-2':'en-IN' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Bill breakdown -->
+        <div class="bill-breakdown">
+          <div class="breakdown-row">
+            <span>Item Total</span>
+            <span>{{ cartService.subtotal() | currency:'INR':'symbol':'1.2-2':'en-IN' }}</span>
+          </div>
+          <div class="breakdown-row">
+            <span>Delivery Fee</span>
+            <span *ngIf="cartService.deliveryFee() === 0" class="free-badge">FREE</span>
+            <span *ngIf="cartService.deliveryFee() > 0">{{ cartService.deliveryFee() | currency:'INR':'symbol':'1.2-2':'en-IN' }}</span>
+          </div>
+          <div class="breakdown-row">
+            <span>Handling & Bag Fee</span>
+            <span class="free-badge">FREE</span>
+          </div>
+          <div class="breakdown-row total-row">
+            <span>To Pay</span>
+            <span class="grand-total">{{ cartService.total() | currency:'INR':'symbol':'1.2-2':'en-IN' }}</span>
+          </div>
+        </div>
+
+        <!-- Delivery Guarantee Pill -->
+        <div class="guarantee-pill">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>100% Quality Guarantee &bull; 10 Mins Promise</span>
+        </div>
+
+        <!-- Action Button -->
+        <button 
+          (click)="placeOrder()" 
+          [disabled]="isLoading || !shippingAddress.trim() || !phoneNumber.trim()" 
+          class="btn-primary place-order-btn"
+        >
+          <span *ngIf="!isLoading">Place SwiftBasket Order &bull; {{ cartService.total() | currency:'INR':'symbol':'1.2-2':'en-IN' }}</span>
+          <span *ngIf="isLoading"><i class="fa-solid fa-spinner fa-spin"></i> Processing Order...</span>
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>

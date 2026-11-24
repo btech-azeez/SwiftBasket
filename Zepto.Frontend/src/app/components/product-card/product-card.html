@@ -1,0 +1,61 @@
+<div class="product-card">
+  
+  <!-- Image Container -->
+  <div class="card-image-wrap">
+    <img 
+      [src]="product.imageUrl || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400'" 
+      [alt]="product.name" 
+      class="product-image" 
+      loading="lazy"
+    />
+    
+    <!-- Discount Badge -->
+    <span *ngIf="discountPercent" class="discount-badge">
+      {{ discountPercent }}% OFF
+    </span>
+
+    <!-- 10 Mins Delivery tag -->
+    <span class="express-tag">
+      <i class="fa-solid fa-clock"></i> 10 MINS
+    </span>
+  </div>
+
+  <!-- Content -->
+  <div class="card-details">
+    <span class="product-unit">{{ product.unit }}</span>
+    <h4 class="product-name" [title]="product.name">{{ product.name }}</h4>
+
+    <div class="card-bottom">
+      <div class="price-container">
+        <span class="current-price">{{ (product.discountPrice || product.price) | currency:'INR':'symbol':'1.2-2':'en-IN' }}</span>
+        <span *ngIf="product.discountPrice" class="original-price">{{ product.price | currency:'INR':'symbol':'1.2-2':'en-IN' }}</span>
+      </div>
+
+      <!-- Action Button / Counter -->
+      <div class="action-wrap">
+        <button 
+          *ngIf="quantityInCart === 0" 
+          (click)="addToCart()" 
+          class="add-btn"
+          [disabled]="!product.inStock"
+        >
+          <span *ngIf="product.inStock">ADD</span>
+          <span *ngIf="!product.inStock" class="out-stock-text">OUT OF STOCK</span>
+        </button>
+
+        <div *ngIf="quantityInCart > 0" class="active-counter">
+          <button (click)="decrement()" class="counter-btn" aria-label="Decrease">
+            <i class="fa-solid fa-minus"></i>
+          </button>
+          <span class="counter-val">{{ quantityInCart }}</span>
+          <button (click)="increment()" class="counter-btn" aria-label="Increase">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,33 @@
+# Build outputs
+**/bin/
+**/obj/
+**/node_modules/
+**/dist/
+**/.angular/
+**/coverage/
+**/TestResults/
+
+# IDE and local tooling state
+**/.vs/
+/.vscode/
+**/.idea/
+**/*.user
+**/*.suo
+
+# Local secrets and environment-specific configuration
+.env
+.env.*
+!.env.example
+**/appsettings.Development.json
+**/appsettings.Local.json
+
+# Local database and generated artifacts
+*.mdf
+*.ldf
+*.bak
+*.db
+*.sqlite
+*.sqlite3
+*.pfx
+*.pem
+*.key
